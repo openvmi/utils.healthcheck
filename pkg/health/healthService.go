@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/openvmi/protobuf_registry_go/pb"
+	"google.golang.org/grpc"
 )
 
 type HealthCheckService struct {
@@ -21,4 +22,8 @@ func (h *HealthCheckService) Check(ctx context.Context, in *pb.HealthCheckReques
 	}
 	status := h.Handler.GetStatus()
 	return &pb.HealthCheckResponse{Status: status}, nil
+}
+
+func RegisterService(server *grpc.Server, service *HealthCheckService) {
+	pb.RegisterServiceHealthCheckServer(server, service)
 }
