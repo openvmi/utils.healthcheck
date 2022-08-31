@@ -5,12 +5,16 @@ import (
 	"time"
 
 	"github.com/openvmi/protobuf_registry_go/pb"
+	"github.com/openvmi/vmilog"
 	"google.golang.org/grpc"
 )
 
-func registe(ip string, port string, serviceName string, tags map[string][]string) bool {
-	registryServiceUrl := ip + ":" + port
-	conn, err := grpc.Dial(registryServiceUrl, grpc.WithInsecure())
+const (
+	MODULE_NAME = "utils_healthcheck_registry"
+)
+
+func registe(registryUrl string, ip string, port string, serviceName string, tags map[string][]string) bool {
+	conn, err := grpc.Dial(registryUrl, grpc.WithInsecure())
 	if err != nil {
 		return false
 	} else {
@@ -37,12 +41,18 @@ func registe(ip string, port string, serviceName string, tags map[string][]strin
 			return false
 		}
 	}
+	return true
 }
 
-func AutoRegistry(ip string, port string, serviceName string, tags map[string][]string, sleepSec int64) {
+func AutoRegistry(registryUrl string, ip string, port string, serviceName string, tags map[string][]string, sleepSec int64) {
+	vmilog.Info(MODULE_NAME, "AutoRegistry is tarted")
 	for {
-		if !registe(ip, port, serviceName, tags) {
+		vmilog.Info(MODULE_NAME, "Try to registe to:"+registryUrl)
+		if !registe(registryUrl, ip, port, serviceName, tags) {
 			time.Sleep(10 * time.Second)
+			vmilog.Error(MODULE_NAME, "registe fail")
+		} else {
+			vmilog.Info(MODULE_NAME, "registe success")
 		}
 		time.Sleep(20 * time.Second)
 	}
