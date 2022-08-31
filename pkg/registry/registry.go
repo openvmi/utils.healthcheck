@@ -52,6 +52,7 @@ func AutoRegistry(registryUrl string, ip string, port string, serviceName string
 			time.Sleep(10 * time.Second)
 			vmilog.Error(MODULE_NAME, "registe fail")
 		} else {
+			time.Sleep(30 * time.Second)
 			vmilog.Info(MODULE_NAME, "registe success")
 		}
 		time.Sleep(20 * time.Second)
